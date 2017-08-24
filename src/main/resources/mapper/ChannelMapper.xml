@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.deyond.fileUpload.module.channel.dao.ChannelDao">
+	
+	<!-- 信息字段 -->
+	<sql id="allFields">
+		c.`id`, 
+		ch.`id` AS parentId, 
+		c.`channelType`,
+		CASE WHEN c.`channelType`=10 THEN c.`name`
+			 WHEN c.`channelType`=20 THEN ch.`name`
+			 WHEN c.`channelType`=30 THEN cha.`name`
+			 ELSE '' END AS groupName,
+		CASE WHEN c.`channelType`=20 THEN c.`name`
+			 WHEN c.`channelType`=30 THEN ch.`name`
+			 ELSE '' END AS channelName,
+		CASE WHEN c.`channelType`=30 THEN c.`name`
+			 ELSE '' END AS channelAccount,
+		CASE WHEN c.`channelType`=20 THEN c.`channelCompany`
+			 WHEN c.`channelType`=30 THEN ch.`channelCompany`
+			 ELSE '' END AS channelCompany,
+		c.`director`,
+		CASE WHEN c.`status`=10 THEN '启用'
+			 WHEN c.`status`=20 THEN '停用'
+			 ELSE '' END 	AS `status`,
+		c.`status` AS statusValue,
+		c.`remark`,
+		date_format(c.`createTime`, '%Y-%m-%d %H:%i:%s') AS `createTime`
+	</sql>
+	
+	<!-- 查询数量 -->
+    <select id="findCount" resultType="int">
+        SELECT count(1) FROM (
+	        SELECT * FROM
+	        (
+	        	SELECT 
+			 	<include refid="allFields"></include>
+			 	FROM t_channel c 
+			 	LEFT JOIN t_channel ch ON c.parentId = ch.id
+			 	LEFT JOIN t_channel cha ON ch.parentId = cha.id
+			 	<include refid="findListIndex_where"/>
+	        ) d 
+	        <include refid="findList_where"/>
+        ) da
+    </select>
+    
+    <!-- 查询列表 -->
+    <select id="findList" resultType="com.deyond.fileUpload.module.channel.entity.Channel">
+        SELECT * FROM
+        (
+	      	SELECT 
+			<include refid="allFields"></include>
+			FROM t_channel c 
+			LEFT JOIN t_channel ch ON c.parentId = ch.id
+			LEFT JOIN t_channel cha ON ch.parentId = cha.id  
+			<include refid="findListIndex_where"/>
+        ) d 
+        <include refid="findList_where"/>
+        order by d.createTime desc
+        limit #{start}, #{pagesize}
+    </select>
+    
+	<!-- 索引查询条件 -->
+	<sql id="findListIndex_where">
+      <where>
+      	  <if test="id!=null and id!=''">
+              and c.id = #{id}
+          </if>
+          <if test="channelType!=null and channelType!=''">
+              and c.channelType = #{channelType}
+          </if>
+      </where>
+    </sql>
+    <!-- 查询条件 -->
+    <sql id="findList_where">
+      <where>
+          <if test="groupName!=null and groupName!=''">
+          	  and d.groupName like CONCAT('%',#{groupName},'%')
+          </if>
+          <if test="channelName!=null and channelName!=''">
+              and d.channelName like CONCAT('%',#{channelName},'%')
+          </if>
+          <if test="channelCompany!=null and channelCompany!=''">
+          	  and d.channelCompany like CONCAT('%',#{channelCompany},'%')
+          </if>
+          <if test="channelAccount!=null and channelAccount!=''">
+          	  and d.channelAccount like CONCAT('%',#{channelAccount},'%')
+          </if>
+          <if test="channelAccount!=null and channelAccount!=''">
+          	  and d.channelAccount like CONCAT('%',#{channelAccount},'%')
+          </if>
+          <if test="status!=null and status!='' ">
+          	  and d.statusValue = #{status}
+          </if>
+      </where>
+    </sql>
+    
+</mapper>

@@ -1,0 +1,35 @@
+# maven ignore
+target/
+*.jar
+*.war
+*.zip
+*.tar
+*.tar.gz
+
+# eclipse ignore
+.settings/
+.project
+.classpath
+.myeclipse/
+
+# idea ignore
+.idea/
+*.ipr
+*.iml
+*.iws
+
+# temp ignore
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+.logs
+logs/
+catalina.home_IS_UNDEFINED/
+
+# svn
+.svn/
+
+# disconf
+disconf/
