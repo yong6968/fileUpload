@@ -119,6 +119,6 @@
 	
   </dependencies>
   <build>
-    <finalName>framework</finalName>
+    <finalName>fileUpload</finalName>
   </build>
 </project>
